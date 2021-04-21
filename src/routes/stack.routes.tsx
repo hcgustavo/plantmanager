@@ -4,12 +4,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Welcome } from '../screens/Welcome';
 import { UserIdentification } from '../screens/UserIdentification';
 import { Confirmation } from '../screens/Confirmation';
+import { PlantSelect } from '../screens/PlantSelect';
 
 import colors from '../styles/colors';
 
 const stackRoutes = createStackNavigator();
 
-const AppRoutes: React.FC = () => (
+const StackRoutes: React.FC = () => (
     <stackRoutes.Navigator
         headerMode="none"
         screenOptions={{
@@ -26,7 +27,11 @@ const AppRoutes: React.FC = () => (
             <stackRoutes.Screen
                 name="Confirmation"
                 component={Confirmation} />
+
+            <stackRoutes.Screen
+                name="PlantSelect"
+                component={PlantSelect} />
     </stackRoutes.Navigator>
 )
 
-export default AppRoutes;
+export default StackRoutes;
