@@ -1,17 +1,30 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import colors from '../styles/colors';
 import userImg from '../assets/gustavo.png';
 import fonts from '../styles/fonts';
-import { color } from 'react-native-reanimated';
 
 export function Header() {
+    const [username, setUsername] = useState('');
+
+    useEffect(() => {
+        async function loadStorageUserName() {
+            const user = await AsyncStorage.getItem('@plantmanager:user');
+            setUsername(user || '');
+        }
+
+        loadStorageUserName();
+
+    }, [username]); // se deixar o o array vazio, useEffect é chamado uma vez. Se alguma var de estado for passado no vetor, o useEffect
+                    // o useEffect será chamado sempre que essa var de estado mudar
+
     return (
         <View style={styles.container}>
             <View>
                 <Text style={styles.greeting}>Hello,</Text>
-                <Text style={styles.username}>Gustavo</Text>
+                <Text style={styles.username}>{username}</Text>
             </View>
 
             <Image style={styles.image} source={userImg} />

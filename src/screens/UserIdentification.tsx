@@ -1,7 +1,8 @@
 import { useNavigation } from '@react-navigation/core';
 import React, { useState } from 'react';
-import {Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, View} from 'react-native';
+import {Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, View, Alert} from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Button from '../components/Button';
 
@@ -29,8 +30,23 @@ export function UserIdentification() {
         setName(value);
     };
 
-    function handleSubmit() {
-        navigation.navigate('Confirmation');
+    async function handleSubmit() {
+        if(!name) {
+            return Alert.alert("Tell me what I should call you 😢");
+        }
+
+        try {
+            await AsyncStorage.setItem('@plantmanager:user', name);
+            navigation.navigate('Confirmation', {
+                title: 'All done',
+                subtitle: "Now let's start taking care of your plants carefully.",
+                buttonTitle: 'Start',
+                icon: 'smile',
+                nextScreen: 'PlantSelect'
+            });
+        } catch (error) {
+            Alert.alert("It was not possible to save your name 😢");
+        }
     }
 
     return (
@@ -53,7 +69,7 @@ export function UserIdentification() {
                             />
                             <View style={styles.footer}>
                                 <Button 
-                                    title="Confirmar"
+                                    title="Confirm"
                                     onPress={handleSubmit}
                                 />
                             </View>
