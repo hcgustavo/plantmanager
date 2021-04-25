@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Image } from 'react-native';
+import { StyleSheet, View, Text, Image, Alert } from 'react-native';
 
 import { Header } from '../components/Header';
 import colors from '../styles/colors';
 import waterdrop from '../assets/waterdrop.png';
 import { FlatList } from 'react-native-gesture-handler';
-import { loadPlants, PlantProps } from '../libs/storage';
+import { PlantProps, loadPlants, removePlant } from '../libs/storage';
 import { formatDistance } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import fonts from '../styles/fonts';
 import { PlantCardSecondary } from '../components/PlantCardSecondary';
+import { Load } from '../components/Load';
 
 export function MyPlants() {
     const [myPlants, setMyPlants] = useState<PlantProps[]>([]);
@@ -34,6 +35,26 @@ export function MyPlants() {
         loadStoredData();
     }, []);
 
+    const handleRemove = (plant: PlantProps) => {
+        Alert.alert('Delete', `Do you want to delete ${plant.name}?`, [
+            {text: 'No', style: 'cancel'},
+            {text: 'Yes', onPress: async () => {
+                try {
+                    await removePlant(plant.id);
+                    
+                    setMyPlants(oldData => oldData.filter(item => item.id !== plant.id));
+
+                } catch (error) {
+                    Alert.alert('It was not possible to remove! 😢')
+                }
+            }}
+        ])
+    };
+
+    if(loading) {
+        return <Load />
+    }
+
     return (
         <View style={styles.container}>
             <Header />
@@ -52,7 +73,10 @@ export function MyPlants() {
                     contentContainerStyle={{flex: 1}}
                     keyExtractor={(item) => String(item.id)}
                     renderItem={({item}) => (
-                        <PlantCardSecondary data={item} />
+                        <PlantCardSecondary 
+                            data={item} 
+                            handleRemove={() => {handleRemove(item)}}
+                        />
                     )}
                  />
             </View>
